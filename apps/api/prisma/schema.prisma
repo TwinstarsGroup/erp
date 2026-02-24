@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  name         String
+  googleSub    String  @unique
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  receipts  Receipt[]
+  vouchers  Voucher[]
+}
+
+model Counter {
+  id      String @id @default(cuid())
+  docType String // "CR" | "PV"
+  year    Int
+  lastSeq Int    @default(0)
+
+  @@unique([docType, year])
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  driveFileId  String
+  driveFolderId String
+  originalName String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+
+  receipt   Receipt? @relation(fields: [receiptId], references: [id])
+  receiptId String?
+  voucher   Voucher? @relation(fields: [voucherId], references: [id])
+  voucherId String?
+}
+
+model Receipt {
+  id          String   @id @default(cuid())
+  docNumber   String   @unique
+  date        DateTime @default(now())
+  amount      Float
+  description String
+  payer       String
+  emailedAt   DateTime?
+  emailedTo   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  attachments Attachment[]
+}
+
+model Voucher {
+  id          String   @id @default(cuid())
+  docNumber   String   @unique
+  date        DateTime @default(now())
+  amount      Float
+  description String
+  payee       String
+  emailedAt   DateTime?
+  emailedTo   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  attachments Attachment[]
+}
