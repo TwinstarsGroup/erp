@@ -33,28 +33,39 @@ export default function VouchersPage() {
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`${API_URL}/vouchers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ amount: parseFloat(form.amount), description: form.description, payee: form.payee }),
-    });
-    setForm({ amount: '', description: '', payee: '' });
-    setLoading(false);
-    load();
+    try {
+      const res = await fetch(`${API_URL}/vouchers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ amount: parseFloat(form.amount), description: form.description, payee: form.payee }),
+      });
+      if (!res.ok) throw new Error('Failed to create voucher');
+      setForm({ amount: '', description: '', payee: '' });
+      load();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sendEmail = async (id: string) => {
     const to = emailForm[id];
     if (!to) return;
-    await fetch(`${API_URL}/vouchers/${id}/email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ to }),
-    });
-    alert('Email sent!');
-    load();
+    try {
+      const res = await fetch(`${API_URL}/vouchers/${id}/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ to }),
+      });
+      if (!res.ok) throw new Error('Failed to send email');
+      alert('Email sent!');
+      load();
+    } catch (err) {
+      alert((err as Error).message);
+    }
   };
 
   return (

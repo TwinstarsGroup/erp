@@ -33,28 +33,39 @@ export default function ReceiptsPage() {
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`${API_URL}/receipts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ amount: parseFloat(form.amount), description: form.description, payer: form.payer }),
-    });
-    setForm({ amount: '', description: '', payer: '' });
-    setLoading(false);
-    load();
+    try {
+      const res = await fetch(`${API_URL}/receipts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ amount: parseFloat(form.amount), description: form.description, payer: form.payer }),
+      });
+      if (!res.ok) throw new Error('Failed to create receipt');
+      setForm({ amount: '', description: '', payer: '' });
+      load();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sendEmail = async (id: string) => {
     const to = emailForm[id];
     if (!to) return;
-    await fetch(`${API_URL}/receipts/${id}/email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ to }),
-    });
-    alert('Email sent!');
-    load();
+    try {
+      const res = await fetch(`${API_URL}/receipts/${id}/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ to }),
+      });
+      if (!res.ok) throw new Error('Failed to send email');
+      alert('Email sent!');
+      load();
+    } catch (err) {
+      alert((err as Error).message);
+    }
   };
 
   return (
