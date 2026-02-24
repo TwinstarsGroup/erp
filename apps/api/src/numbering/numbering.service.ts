@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class NumberingService {
@@ -8,7 +9,7 @@ export class NumberingService {
   async nextNumber(docType: 'CR' | 'PV', date: Date): Promise<string> {
     const year = date.getFullYear();
 
-    const counter = await this.prisma.$transaction(async (tx) => {
+    const counter = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Lock the row for this docType+year
       const existing = await tx.$queryRaw<{ id: string; lastSeq: number }[]>`
         SELECT id, "lastSeq" FROM "Counter"

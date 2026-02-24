@@ -17,7 +17,7 @@ export default function HomePage() {
   useEffect(() => {
     fetch(`${API_URL}/auth/me`, { credentials: 'include' })
       .then((r) => r.json())
-      .then((data) => {
+      .then((data: { user: User | null }) => {
         setUser(data.user);
         setLoading(false);
       })

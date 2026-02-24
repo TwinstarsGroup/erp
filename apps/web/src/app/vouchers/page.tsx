@@ -24,7 +24,7 @@ export default function VouchersPage() {
   const load = () => {
     fetch(`${API_URL}/vouchers`, { credentials: 'include' })
       .then((r) => r.json())
-      .then(setVouchers)
+      .then((data: Voucher[]) => setVouchers(data))
       .catch(() => {});
   };
 

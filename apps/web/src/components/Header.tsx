@@ -18,7 +18,7 @@ export function Header() {
   useEffect(() => {
     fetch(`${API_URL}/auth/me`, { credentials: 'include' })
       .then((r) => r.json())
-      .then((data) => setUser(data.user))
+      .then((data: { user: User | null }) => setUser(data.user))
       .catch(() => setUser(null));
   }, []);
 

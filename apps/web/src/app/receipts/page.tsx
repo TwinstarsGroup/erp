@@ -24,7 +24,7 @@ export default function ReceiptsPage() {
   const load = () => {
     fetch(`${API_URL}/receipts`, { credentials: 'include' })
       .then((r) => r.json())
-      .then(setReceipts)
+      .then((data: Receipt[]) => setReceipts(data))
       .catch(() => {});
   };
 

@@ -1,8 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as session from 'express-session';
-import * as connectPgSimple from 'connect-pg-simple';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const session = require('express-session');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const connectPgSimple = require('connect-pg-simple');
 import { Pool } from 'pg';
 
 async function bootstrap() {
@@ -15,7 +17,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const PgSession = connectPgSimple(session as any);
+  const PgSession = connectPgSimple(session);
   const pgPool = new Pool({ connectionString: process.env.DATABASE_URL });
 
   app.use(
@@ -29,7 +31,7 @@ async function bootstrap() {
         secure: process.env.NODE_ENV === 'production',
         maxAge: 7 * 24 * 60 * 60 * 1000,
       },
-    } as any),
+    }),
   );
 
   const port = process.env.API_PORT || 3001;
