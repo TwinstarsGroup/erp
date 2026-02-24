@@ -8,12 +8,11 @@ import Dashboard from './pages/Dashboard';
 import Receipts from './pages/Receipts';
 import Vouchers from './pages/Vouchers';
 import NotFound from './pages/NotFound';
-
-const base = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+import { routerBase } from './lib/base';
 
 export default function App() {
   return (
-    <BrowserRouter basename={base}>
+    <BrowserRouter basename={routerBase}>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />

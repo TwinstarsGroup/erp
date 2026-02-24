@@ -44,11 +44,11 @@ export default function Receipts() {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('tenant_id')
-      .eq('user_id', user!.id)
+      .eq('id', user!.id)
       .single();
 
-    if (profileError) {
-      setError(`Could not load profile: ${profileError.message}`);
+    if (profileError || !profile?.tenant_id) {
+      setError(profileError ? `Could not load profile: ${profileError.message}` : 'No tenant assigned to your account. Contact an administrator.');
       setSubmitting(false);
       return;
     }
@@ -58,7 +58,7 @@ export default function Receipts() {
       description: form.description,
       payer: form.payer,
       date: form.date || null,
-      tenant_id: profile?.tenant_id ?? null,
+      tenant_id: profile.tenant_id,
       created_by: user!.id,
     });
 

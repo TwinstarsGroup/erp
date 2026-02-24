@@ -1,6 +1,6 @@
 # Twinstars ERP
 
-A monorepo ERP SaaS scaffold built with Next.js (web) and NestJS (API).
+A monorepo ERP SaaS scaffold built with Next.js (web), NestJS (API), and a GitHub Pages–deployable SPA (Vite + React + Supabase).
 
 ## Architecture
 
@@ -8,8 +8,69 @@ A monorepo ERP SaaS scaffold built with Next.js (web) and NestJS (API).
 apps/
   web/     # Next.js App Router UI (port 3000)
   api/     # NestJS API (port 3001)
-docker-compose.yml   # PostgreSQL
+  spa/     # Vite + React SPA deployed to GitHub Pages (Supabase-backed)
+supabase/
+  migrations/   # SQL schema + RLS policies for Supabase
+docker-compose.yml   # PostgreSQL (used by apps/api)
 ```
+
+## GitHub Pages SPA
+
+Live URL: **https://twinstarsgroup.github.io/erp/**
+
+### Purpose
+
+`apps/spa` is a lightweight, fully-static ERP frontend that runs entirely on GitHub Pages.  
+It replaces the need for a running NestJS API for basic CRUD operations by talking directly to [Supabase](https://supabase.com).
+
+Features available in the SPA:
+- Google OAuth login (restricted to `@twinstarsgroup.com`)
+- Dashboard with receipt/voucher counts
+- Receipts: list and create
+- Vouchers: list and create
+
+> **Limitations vs. `apps/api`**: PDF generation, email sending, file attachments, and Google Drive integration are *not* available in the SPA.  These features require the NestJS API.  They can be added later via Supabase Edge Functions if needed.
+
+### Local development
+
+```bash
+cd apps/spa
+cp .env.example .env.local      # fill in your Supabase credentials
+npm install
+npm run dev                      # http://localhost:5173
+```
+
+### Production build
+
+```bash
+cd apps/spa
+npm run build                    # outputs to apps/spa/dist/
+npm run preview                  # preview at http://localhost:4173/erp/
+```
+
+### Supabase environment variables
+
+| Variable | Description |
+|---|---|
+| `VITE_SUPABASE_URL` | Your Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase publishable / anon key |
+
+**Local**: copy `.env.example` → `.env.local` in `apps/spa/` and fill in values.
+
+**GitHub Actions**: add the variables in your repository settings:
+- Go to **Settings → Secrets and variables → Actions → Variables** (not Secrets, since these are publishable keys).
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+
+### GitHub Pages setup (one-time)
+
+1. Go to **Settings → Pages** in this repository.
+2. Set **Source** to `GitHub Actions`.
+3. Push to `main` (or trigger `workflow_dispatch`) — the `pages.yml` workflow builds and deploys automatically.
+
+### Supabase database setup
+
+Run the migration in `supabase/migrations/0001_initial_schema.sql` via the Supabase SQL editor (or `supabase db push` if using the Supabase CLI).  
+Then follow the bootstrap comments at the bottom of that file to insert the initial tenant and admin profile.
 
 ## Prerequisites
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { routerBase } from '../lib/base';
 
 interface AuthContextValue {
   user: User | null;
@@ -59,8 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signIn() {
     setError(null);
-    const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-    const redirectTo = window.location.origin + base + '/auth/callback';
+    const redirectTo = window.location.origin + routerBase + '/auth/callback';
     const { error: e } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo },
