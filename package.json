@@ -5,8 +5,10 @@
   "scripts": {
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
+    "dev:spa": "npm run dev --workspace=apps/spa",
     "build:api": "npm run build --workspace=apps/api",
-    "build:web": "npm run build --workspace=apps/web"
+    "build:web": "npm run build --workspace=apps/web",
+    "build:spa": "npm run build --workspace=apps/spa"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

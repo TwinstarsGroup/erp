@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci --workspace=apps/spa
+        run: npm ci
 
       - name: Build SPA
         working-directory: apps/spa
@@ -39,6 +39,9 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           NODE_ENV: production
         run: npm run build
+
+      - name: Copy index.html to 404.html for SPA routing
+        run: cp apps/spa/dist/index.html apps/spa/dist/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
